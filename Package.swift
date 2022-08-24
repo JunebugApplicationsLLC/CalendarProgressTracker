@@ -3,6 +3,7 @@
 
 import PackageDescription
 
+//Rename to Monthly Progress Tracker?
 let package = Package(
     name: "CalendarProgressTracker",
     products: [
