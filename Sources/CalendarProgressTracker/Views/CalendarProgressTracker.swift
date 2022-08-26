@@ -12,24 +12,48 @@ public struct CalendarProgressTracker: View {
         self.monthViewModel = MonthViewModel(for: date, calendar: calendar, timeZone: timeZone)
     }
     
+    var weekdays: [GridItem] {
+        var items = [GridItem]()
+        
+        for _ in Weekday.allCases {
+            items.append(GridItem())
+        }
+        return items
+    }
     public var body: some View {
         if let month = monthViewModel.month {
-            VStack(alignment: .leading) {
-                Text(month.name)
-                Text(month.year.description)
-//                Grid {
-//                    GridRow {
-//                        ForEach(month.dates) { monthDate in
-//                            Text(monthDate.description)
-//                        }
-//                    }
-//                }
-            }
+            calendarView(for: month)
         } else {
             EmptyView()
                 .onAppear {
                     print("Unable to display month view")
                 }
+        }
+    }
+    
+    @ViewBuilder func calendarView(for month: Month) -> some View {
+        VStack(alignment: .leading)  {
+            monthAndYearStackView(for: month)
+            dates(for: month)
+        }
+    }
+    
+    @ViewBuilder func monthAndYearStackView(for month: Month) -> some View {
+        VStack(alignment: .leading)  {
+            Text(month.name)
+            Text(month.year.description)
+        }
+        .padding([.leading], 10)
+    }
+    
+    @ViewBuilder func dates(for month: Month) -> some View {
+        LazyVGrid(columns: weekdays) {
+            ForEach(Weekday.allCases) { weekday in
+                Text(weekday.rawValue.capitalized)
+            }
+            ForEach(month.dates) { date in
+                Text("\(date)")
+            }
         }
     }
 }

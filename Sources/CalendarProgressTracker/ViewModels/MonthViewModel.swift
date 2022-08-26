@@ -45,6 +45,7 @@ class MonthViewModel: ObservableObject {
     }
     
     static func weeksInMonth(for calendar: Calendar, date: Date) -> Range<Int> {
+//        let daysInMonth =
         return 1..<4
     }
     
@@ -62,8 +63,8 @@ class MonthViewModel: ObservableObject {
     static func monthDates(from calendar: Calendar, date: Date, timeZone: TimeZone) -> Range<Int> {
         let start = monthStartDate(from: calendar.dateComponents([.year, .month], from: date), calendar: calendar)
         
-        let end = monthEndDate(from: calendar.dateComponents([.year, .month], from: date), calendar: calendar)
-        print(start..<end)
+        var end = monthEndDate(from: calendar.dateComponents([.year, .month], from: date), calendar: calendar)
+        end += 1 // increment by 1 because we can't pass a closed range to ForEach without Int conforming to Identifiable
         return start..<end
     }
  }
