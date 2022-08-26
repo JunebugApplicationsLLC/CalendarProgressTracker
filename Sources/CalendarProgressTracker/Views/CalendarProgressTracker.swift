@@ -1,6 +1,6 @@
 import SwiftUI
 
-@available(iOS 14, macOS 11.0, *)
+@available(iOS 16, macOS 11.0, *)
 public struct CalendarProgressTracker: View {
     
     public private(set) var date: Date
@@ -17,6 +17,13 @@ public struct CalendarProgressTracker: View {
             VStack(alignment: .leading) {
                 Text(month.name)
                 Text(month.year.description)
+//                Grid {
+//                    GridRow {
+//                        ForEach(month.dates) { monthDate in
+//                            Text(monthDate.description)
+//                        }
+//                    }
+//                }
             }
         } else {
             EmptyView()

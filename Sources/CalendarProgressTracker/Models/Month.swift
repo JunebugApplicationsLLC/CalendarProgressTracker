@@ -8,7 +8,8 @@
 import Foundation
 
 struct Month: Codable {
-    var dates: Range<Date>
+    var dates: Range<Int>
+    var weeks: Range<Int>
     var name: String
     var year: Int
 }

@@ -21,7 +21,8 @@ class MonthViewModel: ObservableObject {
         let monthDates = MonthViewModel.monthDates(from: calendar, date: date, timeZone: timeZone)
         let monthName = MonthViewModel.monthName(from: calendar, date: date)
         let year = MonthViewModel.year(for: calendar, date: date)
-        self.month = Month(dates: monthDates, name: monthName, year: year)
+        let weeksInMonth = MonthViewModel.weeksInMonth(for: calendar, date: date)
+        self.month = Month(dates: monthDates, weeks: weeksInMonth, name: monthName, year: year)
     }
     
     static func monthStartDate(from components: DateComponents, calendar: Calendar) -> Int {
@@ -43,6 +44,10 @@ class MonthViewModel: ObservableObject {
         return calendar.dateComponents([.year, .month], from: date).year ?? 0
     }
     
+    static func weeksInMonth(for calendar: Calendar, date: Date) -> Range<Int> {
+        return 1..<4
+    }
+    
     static func monthName(from calendar: Calendar, date: Date) -> String {
         let components = calendar.dateComponents([.year, .month], from: date)
         guard let foo = Calendar.current.date(from: components) else { return "Failed" }
@@ -54,22 +59,11 @@ class MonthViewModel: ObservableObject {
         return monthName
     }
     
-    static func monthDates(from calendar: Calendar, date: Date, timeZone: TimeZone) -> Range<Date> {
-        let start = calendar.date(
-            from: DateComponents(
-                timeZone: timeZone,
-                year: calendar.dateComponents([.year], from: date).year ?? 2022,
-                month: calendar.dateComponents([.month], from: date).month ?? 6,
-                day: monthStartDate(from: calendar.dateComponents([.year, .month], from: date), calendar: calendar))
-        )!
-        let end = calendar.date(
-            from: DateComponents(
-                timeZone: timeZone,
-                year: calendar.dateComponents([.year], from: date).year ?? 2022,
-                month: calendar.dateComponents([.month], from: date).month ?? 6,
-                day: monthEndDate(from: calendar.dateComponents([.year, .month], from: date), calendar: calendar))
-        )!
+    static func monthDates(from calendar: Calendar, date: Date, timeZone: TimeZone) -> Range<Int> {
+        let start = monthStartDate(from: calendar.dateComponents([.year, .month], from: date), calendar: calendar)
         
+        let end = monthEndDate(from: calendar.dateComponents([.year, .month], from: date), calendar: calendar)
+        print(start..<end)
         return start..<end
     }
  }
