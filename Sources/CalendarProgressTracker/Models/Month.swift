@@ -8,8 +8,16 @@
 import Foundation
 
 struct Month: Codable {
-    var dates: Range<Int>
-    var weeks: Range<Int>
+    var dates: [Day]
+    var weeks: Int
     var name: String
     var year: Int
+}
+
+struct Day: Codable, Identifiable {
+    var id: UUID { UUID() }
+    var name: String
+    var date: Int
+    var monthName: String
+    var isPlaceholder: Bool = false
 }

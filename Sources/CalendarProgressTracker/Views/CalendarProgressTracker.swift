@@ -51,8 +51,11 @@ public struct CalendarProgressTracker: View {
             ForEach(Weekday.allCases) { weekday in
                 Text(weekday.rawValue.capitalized)
             }
-            ForEach(month.dates) { date in
-                Text("\(date)")
+            ForEach(month.dates) { day in
+                Text(day.isPlaceholder ? "" : "\(day.date)")
+                    .onAppear {
+                        print(day.isPlaceholder)
+                    }
             }
         }
     }
