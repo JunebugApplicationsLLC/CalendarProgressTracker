@@ -13,12 +13,9 @@ public struct CalendarProgressTracker: View {
     }
     
     var weekdays: [GridItem] {
-        var items = [GridItem]()
-        for _ in Weekday.allCases {
-            items.append(GridItem())
-        }
-        return items
+        return Array(repeating: GridItem(), count: Weekday.allCases.count)
     }
+
     public var body: some View {
         if let month = monthViewModel.month {
             calendarView(for: month)
@@ -46,7 +43,7 @@ public struct CalendarProgressTracker: View {
     }
     
     @ViewBuilder func dates(for month: Month) -> some View {
-        LazyVGrid(columns: weekdays) {
+        LazyVGrid(columns: weekdays, spacing: 10) {
             ForEach(Weekday.allCases) { weekday in
                 Text(weekday.rawValue.capitalized)
             }
