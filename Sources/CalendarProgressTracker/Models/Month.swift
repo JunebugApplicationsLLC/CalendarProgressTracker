@@ -12,11 +12,5 @@ struct Month: Codable {
     var weeks: Int
     var name: String
     var year: Int
-}
-
-struct Day: Codable {
-    var name: String
-    var date: Int
-    var monthName: String
-    var isPlaceholder: Bool = false
+    var today: Day
 }

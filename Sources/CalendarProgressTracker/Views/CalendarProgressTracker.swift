@@ -52,6 +52,7 @@ public struct CalendarProgressTracker: View {
             }
             ForEach(month.dates, id: \.date) { day in
                 Text(day.isPlaceholder ? "" : "\(day.date)")
+                    .background(day.date == month.today.date ? Color.orange : Color.clear)
             }
         }
     }
