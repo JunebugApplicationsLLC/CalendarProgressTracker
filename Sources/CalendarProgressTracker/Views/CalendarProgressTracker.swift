@@ -10,12 +10,10 @@ public struct CalendarProgressTracker: View {
         // For now, we can display current month. Eventually, we should show all months from user's first day joining
         self.date = date
         self.monthViewModel = MonthViewModel(for: date, calendar: calendar, timeZone: timeZone)
-        print(monthViewModel.month?.dates.count)
     }
     
     var weekdays: [GridItem] {
         var items = [GridItem]()
-        
         for _ in Weekday.allCases {
             items.append(GridItem())
         }

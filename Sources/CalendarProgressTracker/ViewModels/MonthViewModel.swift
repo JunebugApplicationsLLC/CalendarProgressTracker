@@ -14,25 +14,23 @@ class MonthViewModel: ObservableObject {
     private var timeZone: TimeZone
     
     init(for date: Date, calendar: Calendar, timeZone: TimeZone) {
-        
         self.calendar = calendar
         self.timeZone = timeZone
         
         let components = calendar.dateComponents([.year, .month], from: date)
-        
         let monthName = MonthViewModel.monthName(from: calendar, date: date)
         let year = MonthViewModel.year(for: calendar, date: date)
         let monthDates = MonthViewModel.monthDates(from: calendar, components: components, timeZone: timeZone, monthName: monthName)
-        let weeksInMonth = MonthViewModel.weeks(in: monthDates)
-        self.month = Month(dates: monthDates, weeks: weeksInMonth, name: monthName, year: year)
+        let daysAndWeeksInMonth = MonthViewModel.daysAndweeks(in: monthDates)
+        self.month = Month(dates: daysAndWeeksInMonth.days, weeks: daysAndWeeksInMonth.weeks, name: monthName, year: year)
     }
     
     static func year(for calendar: Calendar, date: Date) -> Int {
         return calendar.dateComponents([.year, .month], from: date).year ?? 0
     }
     
-    static private func weeks(in month: [Day]) -> Int {
-        guard let firstDayInMonth = month.first else { return 4 }
+    static private func daysAndweeks(in month: [Day]) -> (weeks: Int, days: [Day]) {
+        guard let firstDayInMonth = month.first else { return (4, []) }
         
         let placeholderCount = findDifferenceFromSunday(to: firstDayInMonth.name)
         
@@ -42,19 +40,16 @@ class MonthViewModel: ObservableObject {
             placeholderDays.append((Day(name: "", date: 0, monthName: "", isPlaceholder: true)))
         }
 
-        placeholderDays += month
-        print("Placeholder count: \(placeholderCount)")
-        var numberOfWeeksInMonth = placeholderDays.count / Weekday.allCases.count
-        
-        // 32/7 = 4.x -> 5 weeks
-        
-        
-        if placeholderDays.count % 7 != 0 {
-            print("Added extra week for overflow")
+        var datesWithPlaceholders = month
+        datesWithPlaceholders.insert(contentsOf: placeholderDays, at: 0)
+
+        var numberOfWeeksInMonth = datesWithPlaceholders.count / Weekday.allCases.count
+
+        if datesWithPlaceholders.count % 7 != 0 {
             numberOfWeeksInMonth += 1
         }
-        print("Number of Weeks In Month: \(numberOfWeeksInMonth)")
-        return numberOfWeeksInMonth
+
+        return (numberOfWeeksInMonth, datesWithPlaceholders)
     }
     
     static private func findDifferenceFromSunday(to monthStartDay: String) -> Int {
@@ -99,8 +94,6 @@ class MonthViewModel: ObservableObject {
         endDateComponents.month = (endDateComponents.month ?? 0) + 1
         endDateComponents.hour = (endDateComponents.hour ?? 0) - 1
         
-        
-                
         guard let monthEndDate = calendar.date(from: endDateComponents) else {
             return []
         }
@@ -108,8 +101,6 @@ class MonthViewModel: ObservableObject {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy-MMMM-d HH:mm:ss 'UTC'"
         let endOfMonth = dateFormatter.string(from: monthEndDate)
-        
-//        print("End of month: \(endOfMonth) from \(monthEndDate)")
 
         // Pull start of month date value (ex: 31 for August 31st)
         var endOfMonthDateComponents = endOfMonth.description.components(separatedBy: " ")
@@ -121,16 +112,14 @@ class MonthViewModel: ObservableObject {
               let monthEnd = Int(monthEndDateValue) else {
             return []
         }
-        print("MonthStart: \(monthStart), MonthEnd \(monthEnd)")
         var monthDates = [Date]()
         
         var iterableComponents = components
         
-       
         for _ in monthStart...monthEnd {
             guard let date = calendar.date(from: iterableComponents) else { return [] }
             monthDates.append(date)
-            iterableComponents.day = (iterableComponents.day ?? 0) + 1
+            iterableComponents.day = (iterableComponents.day ?? 1) + 1
         }
         
         var days = [Day]()
@@ -138,7 +127,6 @@ class MonthViewModel: ObservableObject {
         let dayFormatter = DateFormatter()
         dayFormatter.dateFormat = "yyyy-MMMM-E HH:mm:ss 'UTC'"
 
-        
         for date in monthDates {
             var dateComponents = date.description.components(separatedBy: " ")
             let dateInfo = dateComponents.removeFirst()
@@ -156,8 +144,6 @@ class MonthViewModel: ObservableObject {
             let day = Day(name: dayName, date: dateValue, monthName: monthName)
             days.append(day)
         }
-        
-        print("Days in Month: \(days.count)")
         return days
     }
  }
