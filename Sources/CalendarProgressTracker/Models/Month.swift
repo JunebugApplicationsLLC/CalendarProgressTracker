@@ -14,8 +14,7 @@ struct Month: Codable {
     var year: Int
 }
 
-struct Day: Codable, Identifiable {
-    var id: UUID { UUID() }
+struct Day: Codable {
     var name: String
     var date: Int
     var monthName: String
