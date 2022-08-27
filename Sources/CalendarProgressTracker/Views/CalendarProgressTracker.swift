@@ -2,7 +2,6 @@ import SwiftUI
 
 @available(iOS 16, macOS 11.0, *)
 public struct CalendarProgressTracker: View {
-
     public private(set) var date: Date
     @ObservedObject private var monthViewModel: MonthViewModel
 
@@ -17,14 +16,16 @@ public struct CalendarProgressTracker: View {
     }
 
     public var body: some View {
-        if let month = monthViewModel.month {
-            calendarView(for: month)
-                .padding()
-        } else {
-            EmptyView()
-                .onAppear {
-                    print("Unable to display month view")
-                }
+        GeometryReader { frame in
+            if let month = monthViewModel.month {
+                calendarView(for: month)
+                    .padding([.leading, .trailing], frame.size.width * 0.05)
+            } else {
+                EmptyView()
+                    .onAppear {
+                        print("Unable to display month view")
+                    }
+            }
         }
     }
     

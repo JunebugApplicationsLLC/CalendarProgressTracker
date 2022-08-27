@@ -6,12 +6,14 @@
 //
 
 import Foundation
+import SwiftUI
 
 @available(iOS 13.0, *)
 class MonthViewModel: ObservableObject {
     @Published var month: Month?
     private var calendar: Calendar
     private var timeZone: TimeZone
+    
 
     init(for date: Date, calendar: Calendar, timeZone: TimeZone) {
         self.calendar = calendar
