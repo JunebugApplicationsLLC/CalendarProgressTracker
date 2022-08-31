@@ -21,7 +21,7 @@ struct ContentView: View {
 ```
 <img width="404" alt="Screen Shot 2022-08-31 at 12 58 04 AM" src="https://user-images.githubusercontent.com/12484197/187599398-b0aa749f-f6bf-4087-83af-7262a8a3dac4.png">
 
-Future releases will include:
+Please note that the current version of this package only highlights the current date. Future releases will include:
 - the ability to conditionally highlight dates based on business logic
 - the ability to pass in color schemes, font styles and other customization attributes (e.g. leading/trailing Month Label)
 - widgets for home screen and watchOS integration?
