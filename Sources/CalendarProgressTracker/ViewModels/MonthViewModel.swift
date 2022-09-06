@@ -108,7 +108,7 @@ class MonthViewModel: ObservableObject {
         
         for position in 0..<weekdays.count  {
             previousMonthDays.append(weekdays[position])
-            if monthStartDay == weekdays[position].rawValue {
+            if monthStartDay == weekdays[position].nameForDay() {
                 break
             }
         }
