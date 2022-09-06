@@ -7,9 +7,9 @@
 
 import Foundation
 
-struct Day: Codable {
-    var name: String
-    var date: Int
-    var monthName: String
-    var isPlaceholder: Bool = false
+public struct Day: Codable {
+    public var name: String
+    public var date: Int
+    public var monthName: String
+    public var isPlaceholder: Bool = false
 }

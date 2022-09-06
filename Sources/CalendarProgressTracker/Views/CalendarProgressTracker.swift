@@ -4,11 +4,13 @@ import SwiftUI
 public struct CalendarProgressTracker: View {
     public private(set) var date: Date
     @ObservedObject private var monthViewModel: MonthViewModel
+    var userTappedDateAction: (Day) -> Void
 
-    public init(date: Date = Date(), calendar: Calendar, timeZone: TimeZone) {
+    public init(date: Date = Date(), calendar: Calendar, timeZone: TimeZone, userTappedDateAction: @escaping (Day) -> Void) {
         // For now, we can display current month. Eventually, we should show all months from user's first day joining
         self.date = date
         self.monthViewModel = MonthViewModel(for: date, calendar: calendar, timeZone: timeZone)
+        self.userTappedDateAction = userTappedDateAction
     }
     
     var weekdays: [GridItem] {
@@ -54,10 +56,15 @@ public struct CalendarProgressTracker: View {
                         .frame(width: frame.size.width / 7)
                 }
                 ForEach(month.dates, id: \.date) { day in
-                    Text(day.isPlaceholder ? "" : "\(day.date)")
-                        .frame(width: frame.size.width / 7, height: frame.size.width / 7)
-                        .background(day.date == month.today.date ? Color.mint : Color.clear)
-                        .clipShape(Circle())
+                    Button {
+                        userTappedDateAction(day)
+                    } label: {
+                        Text(day.isPlaceholder ? "" : "\(day.date)")
+                            .frame(width: frame.size.width / 7, height: frame.size.width / 7)
+                            .background(day.date == month.today.date ? Color.mint : Color.clear)
+                            .clipShape(Circle())
+                            .foregroundColor(.black)
+                    }
                     
                 }
             }
