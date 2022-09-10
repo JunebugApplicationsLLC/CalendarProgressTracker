@@ -4,18 +4,15 @@ import SwiftUI
 public struct CalendarProgressTracker: View {
     public private(set) var date: Date
     @ObservedObject private var monthViewModel: MonthViewModel
-    var highlightDayAction: () -> Bool
     var userTappedDateAction: (Day) -> Void
-    
-    @State var shouldHighlightDay: (day: Day, shouldHighlight: Bool)? = nil
+    @State var selectedDay: Day?
 
-    public init(date: Date = Date(), calendar: Calendar, timeZone: TimeZone, highlightDayAction: @escaping () -> Bool, userTappedDateAction: @escaping (Day) -> Void) {
+    public init(date: Date = Date(), calendar: Calendar, timeZone: TimeZone, userTappedDateAction: @escaping (Day) -> Void) {
         // For now, we can display current month. Eventually, we should show all months from user's first day joining
         let viewModel = MonthViewModel(for: date, calendar: calendar, timeZone: timeZone)
         self.date = date
         self.monthViewModel = viewModel
         self.userTappedDateAction = userTappedDateAction
-        self.highlightDayAction = highlightDayAction
     }
     
     private var weekdays: [GridItem] {
@@ -53,6 +50,27 @@ public struct CalendarProgressTracker: View {
         .padding([.leading], 10)
     }
     
+    var selectedDayShouldBeHighlighted: Bool {
+        guard let selectedDay = $selectedDay.wrappedValue else {
+            return false
+        }
+        print(selectedDay.date, selectedDay.isHighlighted)
+        return selectedDay.isHighlighted
+    }
+    
+    func backgroundColor(for day: Day, _ month: Month) -> Color {
+        guard !day.isPlaceholder else { return .clear }
+        
+        if day.date == month.today.date {
+            return .mint
+        } else if selectedDayShouldBeHighlighted {
+            if $selectedDay.wrappedValue?.date == day.date {
+                return .pink
+            }
+        }
+        return .clear
+    }
+    
     @ViewBuilder func dates(for month: Month) -> some View {
         GeometryReader { frame in
             LazyVGrid(columns: weekdays) {
@@ -60,22 +78,18 @@ public struct CalendarProgressTracker: View {
                     Text(weekday.rawValue.capitalized)
                         .frame(width: frame.size.width / 7)
                 }
-                ForEach(month.dates, id: \.date) { day in
+                ForEach(Array(zip(month.dates.indices, month.dates)), id: \.0) { index, day in
                     Button {
                         userTappedDateAction(day)
-//                        if let highlightDayAction = highlightDayAction  {
-                        let highlightInfo = (day, highlightDayAction())
-                        shouldHighlightDay = highlightInfo
-//                        }
+                        selectedDay = day
                     } label: {
                         Text(day.isPlaceholder ? "" : "\(day.date)")
                             .frame(width: frame.size.width / 7, height: frame.size.width / 7)
-                            .background(shouldHighlightDay?.day == day ? shouldHighlightDay?.shouldHighlight ?? false ? Color.pink : Color.clear : Color.clear)
-                            .background(day.date == month.today.date ? Color.mint : Color.clear)
+                            .background(backgroundColor(for: day, month))
                             .clipShape(Circle())
-                            .foregroundColor(.black)
+                            .foregroundColor(day > month.today ? .gray : .black)
                     }
-                    
+                    .disabled(day > month.today)
                 }
             }
         }
