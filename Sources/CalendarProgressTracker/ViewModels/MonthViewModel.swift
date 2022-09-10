@@ -89,7 +89,7 @@ public class MonthViewModel: ObservableObject {
         var placeholderDays: [Day] = []
         
         for _ in 0..<placeholderCount {
-            placeholderDays.append((Day(name: "", date: 0, monthName: "", isPlaceholder: true)))
+            placeholderDays.append((Day(name: "", date: Int.random(in: Int.min...0), monthName: "", isPlaceholder: true)))
         }
 
         var datesWithPlaceholders = month

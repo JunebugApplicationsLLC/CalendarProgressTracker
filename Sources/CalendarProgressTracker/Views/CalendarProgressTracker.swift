@@ -1,18 +1,4 @@
 import SwiftUI
-import Combine
-
-
-@available(iOS 13.0, *)
-public class HighlightedDateViewModel: ObservableObject {
-    @Published public var days: Days
-    public var monthViewModel: MonthViewModel
-
-    public init(_ calendar: Calendar, _ timeZone: TimeZone) {
-        let monthViewModel = MonthViewModel(calendar: calendar, timeZone: timeZone)
-        self.days = monthViewModel.month?.dates ?? Days(days: [Day]())
-        self.monthViewModel = monthViewModel
-    }
-}
 
 @available(iOS 16, macOS 11.0, *)
 public struct CalendarProgressTracker: View {
@@ -40,7 +26,7 @@ public struct CalendarProgressTracker: View {
         GeometryReader { frame in
             if let month = monthViewModel.month {
                 calendarView(for: month)
-                    .padding([.leading, .trailing], frame.size.width * 0.05)
+                    .padding([.leading, .trailing], frame.size.width * 0.02)
             } else {
                 EmptyView()
                     .onAppear {
@@ -51,20 +37,16 @@ public struct CalendarProgressTracker: View {
     }
     
     @ViewBuilder func calendarView(for month: Month) -> some View {
-        VStack(alignment: .leading)  {
+        VStack(alignment: .leading, spacing: 8)  {
             monthAndYearStackView(for: month)
             dates(for: month)
         }
     }
     
     @ViewBuilder func monthAndYearStackView(for month: Month) -> some View {
-        VStack(alignment: .leading)  {
-            Text(month.name)
-                .font(.largeTitle)
-            Text(month.year.description)
-                .font(.title2)
-        }
-        .padding([.leading], 10)
+        Text("\(month.name) \(month.year.description)")
+            .font(.largeTitle)
+            .padding([.leading], 8)
     }
     
     var selectedDayShouldBeHighlighted: Bool {
@@ -75,9 +57,7 @@ public struct CalendarProgressTracker: View {
     func backgroundColor(for day: Day, _ month: Month) -> Color {
         guard !day.isPlaceholder else { return .clear }
         
-        if day.date == month.today.date {
-            return .mint
-        } else if day.isHighlighted {
+        if day.isHighlighted {
             return .pink
         }
         return .clear
@@ -99,6 +79,12 @@ public struct CalendarProgressTracker: View {
                             .frame(width: frame.size.width / 7, height: frame.size.width / 7)
                             .background(backgroundColor(for: day, month))
                             .clipShape(Circle())
+                            .overlay(
+                                Circle()
+                                    .stroke(month.today.date == day.date ? Color.black : Color.clear, lineWidth: 1)
+                                    .padding(1)
+                            )
+
                             .foregroundColor(day > month.today ? Color.gray : Color.black)
                     }
                     .disabled(day > month.today)
