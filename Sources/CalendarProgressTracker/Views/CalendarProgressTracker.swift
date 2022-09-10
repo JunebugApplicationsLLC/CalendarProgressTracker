@@ -45,7 +45,7 @@ public struct CalendarProgressTracker: View {
     
     @ViewBuilder func monthAndYearStackView(for month: Month) -> some View {
         Text("\(month.name) \(month.year.description)")
-            .font(.largeTitle)
+            .font(.title)
             .padding([.leading], 8)
     }
     
