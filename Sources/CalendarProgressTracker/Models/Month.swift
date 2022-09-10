@@ -8,8 +8,8 @@
 import Foundation
 
 @available(iOS 13.0, *)
-public struct Month: Codable {
-    public var dates: [Day]
+public struct Month {
+    public var dates: Days
     public var weeks: Int
     public var name: String
     public var year: Int

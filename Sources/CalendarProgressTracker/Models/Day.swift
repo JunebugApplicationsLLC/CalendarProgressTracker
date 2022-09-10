@@ -6,15 +6,28 @@
 //
 
 import Foundation
+import SwiftUI
 
-public class Day: Codable, Hashable, Identifiable {
+@available(iOS 13.0, *)
+public class Days: ObservableObject {
+    
+    @Published public var observableDays: [Day]
+    
+    public init(days: [Day]) {
+        self.observableDays = days
+    }
+}
+
+@available(iOS 13.0, *)
+public struct Day: Codable, Hashable, Identifiable {
+    public var id: String { "\(monthName) \(name) \(date)" }
     public var name: String
     public var date: Int
     public var monthName: String
     public var isPlaceholder: Bool = false
     public var isHighlighted: Bool = false
     
-    public func should(highlightDay: Bool) {
+    public mutating func should(highlightDay: Bool) {
         self.isHighlighted = highlightDay
     }
     
@@ -26,14 +39,16 @@ public class Day: Codable, Hashable, Identifiable {
         self.isHighlighted = isHighlighted
     }
     
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(ObjectIdentifier(self))
-    }
+//    public func hash(into hasher: inout Hasher) {
+//        hasher.combine(ObjectIdentifier(self))
+//    }
 }
 
+@available(iOS 13.0, *)
 extension Day: Comparable {
     public static func == (lhs: Day, rhs: Day) -> Bool {
-        return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
+//        return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
+        return lhs.date == rhs.date
     }
     
     public static func < (lhs: Day, rhs: Day) -> Bool {

@@ -1,22 +1,38 @@
 import SwiftUI
+import Combine
+
+
+@available(iOS 13.0, *)
+public class HighlightedDateViewModel: ObservableObject {
+    @Published public var days: Days
+    public var monthViewModel: MonthViewModel
+
+    public init(monthViewModel: MonthViewModel) {
+        self.days = monthViewModel.month?.dates ?? Days(days: [Day]())
+        self.monthViewModel = monthViewModel
+    }
+}
 
 @available(iOS 16, macOS 11.0, *)
 public struct CalendarProgressTracker: View {
-    public private(set) var date: Date
     @ObservedObject private var monthViewModel: MonthViewModel
+    @ObservedObject var highlightedDateViewModel: HighlightedDateViewModel
     var userTappedDateAction: (Day) -> Void
     @State var selectedDay: Day?
 
-    public init(date: Date = Date(), calendar: Calendar, timeZone: TimeZone, userTappedDateAction: @escaping (Day) -> Void) {
+    public init(monthViewModel: MonthViewModel, userTappedDateAction: @escaping (Day) -> Void) {
         // For now, we can display current month. Eventually, we should show all months from user's first day joining
-        let viewModel = MonthViewModel(for: date, calendar: calendar, timeZone: timeZone)
-        self.date = date
-        self.monthViewModel = viewModel
+        self.monthViewModel = monthViewModel
+        self.highlightedDateViewModel = HighlightedDateViewModel(monthViewModel: monthViewModel)
         self.userTappedDateAction = userTappedDateAction
     }
     
     private var weekdays: [GridItem] {
         return Array(repeating: GridItem(), count: Weekday.allCases.count)
+    }
+    
+    var month: Month? {
+        return monthViewModel.month
     }
 
     public var body: some View {
@@ -51,10 +67,7 @@ public struct CalendarProgressTracker: View {
     }
     
     var selectedDayShouldBeHighlighted: Bool {
-        guard let selectedDay = $selectedDay.wrappedValue else {
-            return false
-        }
-        print(selectedDay.date, selectedDay.isHighlighted)
+        guard let selectedDay = $selectedDay.wrappedValue else { return false }
         return selectedDay.isHighlighted
     }
     
@@ -63,10 +76,8 @@ public struct CalendarProgressTracker: View {
         
         if day.date == month.today.date {
             return .mint
-        } else if selectedDayShouldBeHighlighted {
-            if $selectedDay.wrappedValue?.date == day.date {
-                return .pink
-            }
+        } else if day.isHighlighted {
+            return .pink
         }
         return .clear
     }
@@ -78,7 +89,7 @@ public struct CalendarProgressTracker: View {
                     Text(weekday.rawValue.capitalized)
                         .frame(width: frame.size.width / 7)
                 }
-                ForEach(Array(zip(month.dates.indices, month.dates)), id: \.0) { index, day in
+                ForEach(month.dates.observableDays, id: \.date) { day in
                     Button {
                         userTappedDateAction(day)
                         selectedDay = day
@@ -87,7 +98,7 @@ public struct CalendarProgressTracker: View {
                             .frame(width: frame.size.width / 7, height: frame.size.width / 7)
                             .background(backgroundColor(for: day, month))
                             .clipShape(Circle())
-                            .foregroundColor(day > month.today ? .gray : .black)
+                            .foregroundColor(day > month.today ? Color.gray : Color.black)
                     }
                     .disabled(day > month.today)
                 }

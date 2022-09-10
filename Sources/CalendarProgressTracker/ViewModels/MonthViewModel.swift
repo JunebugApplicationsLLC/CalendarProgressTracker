@@ -9,13 +9,13 @@ import Foundation
 import SwiftUI
 
 @available(iOS 13.0, *)
-class MonthViewModel: ObservableObject {
+public class MonthViewModel: ObservableObject {
     @Published var month: Month?
     private var calendar: Calendar
     private var timeZone: TimeZone
     
 
-    init(for date: Date, calendar: Calendar, timeZone: TimeZone) {
+    public init(for date: Date = Date(), calendar: Calendar, timeZone: TimeZone) {
         self.calendar = calendar
         self.timeZone = timeZone
 
@@ -25,7 +25,7 @@ class MonthViewModel: ObservableObject {
         let monthDates = MonthViewModel.monthDates(from: calendar, components: components, timeZone: timeZone, monthName: monthName)
         let daysAndWeeksInMonth = MonthViewModel.daysAndweeks(in: monthDates)
         let today = MonthViewModel.day(from: date, monthName: monthName)
-        self.month = Month(dates: daysAndWeeksInMonth.days, weeks: daysAndWeeksInMonth.weeks, name: monthName, year: year, today: today)
+        self.month = Month(dates: Days(days: daysAndWeeksInMonth.days), weeks: daysAndWeeksInMonth.weeks, name: monthName, year: year, today: today)
     }
 
     static private var dayFormatter: DateFormatter {
