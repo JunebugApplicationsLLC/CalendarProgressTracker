@@ -7,7 +7,8 @@ public class HighlightedDateViewModel: ObservableObject {
     @Published public var days: Days
     public var monthViewModel: MonthViewModel
 
-    public init(monthViewModel: MonthViewModel) {
+    public init(_ calendar: Calendar, _ timeZone: TimeZone) {
+        let monthViewModel = MonthViewModel(calendar: calendar, timeZone: timeZone)
         self.days = monthViewModel.month?.dates ?? Days(days: [Day]())
         self.monthViewModel = monthViewModel
     }
@@ -20,10 +21,10 @@ public struct CalendarProgressTracker: View {
     var userTappedDateAction: (Day) -> Void
     @State var selectedDay: Day?
 
-    public init(monthViewModel: MonthViewModel, userTappedDateAction: @escaping (Day) -> Void) {
+    public init(_ highlightedDateViewModel: HighlightedDateViewModel, userTappedDateAction: @escaping (Day) -> Void) {
         // For now, we can display current month. Eventually, we should show all months from user's first day joining
-        self.monthViewModel = monthViewModel
-        self.highlightedDateViewModel = HighlightedDateViewModel(monthViewModel: monthViewModel)
+        self.monthViewModel = highlightedDateViewModel.monthViewModel
+        self.highlightedDateViewModel = highlightedDateViewModel
         self.userTappedDateAction = userTappedDateAction
     }
     
